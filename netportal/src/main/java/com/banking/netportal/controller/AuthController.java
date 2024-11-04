@@ -9,7 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -24,15 +23,14 @@ public class AuthController {
         return ResponseEntity
             .status(HttpStatus.CONFLICT)
             .body("Email already registered");
-    }
-    
-    User user = authServiceImpl.registerUser(
-      registrationRequest.getEmail(), 
-      registrationRequest.getPassword(),
-      registrationRequest.getFirstName(),
-      registrationRequest.getLastName()
-    );
-      return ResponseEntity.ok("User registered successfully" + user.getEmail());
+      }
+
+      User user = authServiceImpl.registerUser(
+          registrationRequest.getEmail(),
+          registrationRequest.getPassword(),
+          registrationRequest.getFirstName(),
+          registrationRequest.getLastName());
+      return ResponseEntity.ok("User registered successfully " + user.getEmail());
 
     } catch (Exception e) {
       return ResponseEntity
@@ -47,9 +45,12 @@ public class AuthController {
     return ResponseEntity.ok(user);
   }
 
-  @GetMapping("/user")
-  public ResponseEntity<User> getUser(@RequestParam String email) {
+  @GetMapping("/users/{email}")
+  public ResponseEntity<?> getUserByEmail(@PathVariable String email) {
     User user = authServiceImpl.getUserByEmail(email);
-    return ResponseEntity.ok(user);
+    if (user != null) {
+      return ResponseEntity.ok(user);
+    }
+    return ResponseEntity.notFound().build();
   }
 }
